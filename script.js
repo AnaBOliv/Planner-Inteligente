@@ -1,30 +1,55 @@
-const form = document.getElementById("formObjetivo");
-const lista = document.getElementById("listaObjetivos");
+const formEntrega = document.getElementById("formEntrega");
+const listaEntregas = document.getElementById("listaEntregas");
 const filtro = document.getElementById("filtro");
+const temaBtn = document.getElementById("temaBtn");
 
-let objetivos =
-JSON.parse(localStorage.getItem("objetivos")) || [];
+let entregas =
+JSON.parse(localStorage.getItem("entregas")) || [];
+
+let historicoCep =
+JSON.parse(localStorage.getItem("historicoCep")) || [];
+
+/* FRASES */
 
 const frases = [
+
     "Disciplina supera motivação.",
+
     "Pequenos passos geram grandes resultados.",
-    "Consistência é mais importante que intensidade.",
-    "O futuro depende do que você faz hoje."
+
+    "Consistência é melhor que intensidade.",
+
+    "Seu futuro é criado hoje.",
+
+    "Uma entrega por vez gera grandes conquistas.",
+
+    "Organização transforma metas em resultados."
 ];
 
-document.getElementById("fraseMotivacao")
-.textContent =
-frases[Math.floor(Math.random()*frases.length)];
+function novaFrase(){
 
-const temaSalvo =
-localStorage.getItem("tema");
+    const frase =
+    frases[Math.floor(Math.random() * frases.length)];
 
-if(temaSalvo === "dark"){
+    document.getElementById(
+        "fraseMotivacao"
+    ).textContent = frase;
+}
+
+document
+.getElementById("novaFrase")
+.addEventListener("click", novaFrase);
+
+novaFrase();
+
+/* TEMA */
+
+if(localStorage.getItem("tema") === "dark"){
+
     document.body.classList.add("dark");
 }
 
-document.getElementById("temaBtn")
-.addEventListener("click",()=>{
+temaBtn.addEventListener("click",()=>{
 
     document.body.classList.toggle("dark");
 
@@ -36,189 +61,308 @@ document.getElementById("temaBtn")
     );
 });
 
-form.addEventListener("submit",(e)=>{
+/* FORM */
 
-    e.preventDefault();
+formEntrega.addEventListener(
+    "submit",
+    async (e)=>{
 
-    const titulo =
-    document.getElementById("titulo").value.trim();
+        e.preventDefault();
 
-    const prioridade =
-    document.getElementById("prioridade").value;
+        const titulo =
+        document.getElementById("titulo")
+        .value.trim();
 
-    const data =
-    document.getElementById("data").value;
+        const prioridade =
+        document.getElementById("prioridade")
+        .value;
 
-    objetivos.push({
+        const data =
+        document.getElementById("data")
+        .value;
 
-        id:Date.now(),
+        const cep =
+        document.getElementById("cepEntrega")
+        .value.replace(/\D/g,'');
 
-        titulo,
+        if(cep.length !== 8){
 
-        prioridade,
+            alert("CEP inválido.");
+            return;
+        }
 
-        data,
+        try{
 
-        concluido:false
-    });
+            const resposta =
+            await fetch(
+            `https://viacep.com.br/ws/${cep}/json/`
+            );
 
-    salvar();
+            const endereco =
+            await resposta.json();
 
-    form.reset();
-});
+            if(endereco.erro){
+
+                alert("CEP não encontrado.");
+                return;
+            }
+
+            entregas.push({
+
+                id:Date.now(),
+
+                titulo,
+
+                prioridade,
+
+                data,
+
+                cep,
+
+                endereco:
+
+                `${endereco.logradouro},
+                ${endereco.bairro},
+                ${endereco.localidade}/${endereco.uf}`,
+
+                concluida:false
+            });
+
+            salvar();
+
+            formEntrega.reset();
+
+        }catch{
+
+            alert(
+            "Erro ao consultar o CEP."
+            );
+        }
+    }
+);
+
+/* SALVAR */
 
 function salvar(){
 
     localStorage.setItem(
-        "objetivos",
-        JSON.stringify(objetivos)
+        "entregas",
+        JSON.stringify(entregas)
     );
 
     renderizar();
 }
 
+/* RENDER */
+
 function renderizar(){
 
-    lista.innerHTML="";
+    listaEntregas.innerHTML = "";
 
-    const tipo = filtro.value;
+    let listaFiltrada = [...entregas];
 
-    let exibir = [...objetivos];
+    if(filtro.value === "pendentes"){
 
-    if(tipo==="pendentes"){
-        exibir = objetivos.filter(o=>!o.concluido);
+        listaFiltrada =
+        entregas.filter(
+            e=>!e.concluida
+        );
     }
 
-    if(tipo==="concluidos"){
-        exibir = objetivos.filter(o=>o.concluido);
+    if(filtro.value === "concluidas"){
+
+        listaFiltrada =
+        entregas.filter(
+            e=>e.concluida
+        );
     }
 
-    exibir.forEach(obj=>{
+    listaFiltrada.forEach(entrega=>{
 
         const li =
         document.createElement("li");
 
-        li.className="item";
+        li.className =
+        `entrega ${
+            entrega.concluida
+            ? "concluida"
+            : ""
+        }`;
 
-        li.innerHTML=`
-            <strong>${obj.titulo}</strong><br>
-            ${obj.prioridade} • ${obj.data}
-            <br><br>
-            <button onclick="toggle(${obj.id})">
+        const prioridadeClasse =
+
+        entrega.prioridade === "Alta"
+        ? "prioridade-alta"
+
+        : entrega.prioridade === "Média"
+        ? "prioridade-media"
+
+        : "prioridade-baixa";
+
+        li.innerHTML = `
+
+        <h3>
+            📦 ${entrega.titulo}
+        </h3>
+
+        <p class="${prioridadeClasse}">
+            🚩 ${entrega.prioridade}
+        </p>
+
+        <p>
+            📅 ${formatarData(entrega.data)}
+        </p>
+
+        <p>
+            📍 ${entrega.endereco}
+        </p>
+
+        <div class="acoes">
+
+            <button
+                class="btn-concluir"
+                onclick="toggleEntrega(${entrega.id})"
+            >
                 ✔
             </button>
 
-            <button onclick="remover(${obj.id})">
+            <button
+                class="btn-remover"
+                onclick="removerEntrega(${entrega.id})"
+            >
                 🗑
             </button>
+
+        </div>
         `;
 
-        if(obj.concluido){
-            li.classList.add("concluido");
-        }
-
-        lista.appendChild(li);
+        listaEntregas.appendChild(li);
     });
 
     atualizarProgresso();
 }
 
-function toggle(id){
+/* DATA */
 
-    objetivos = objetivos.map(o=>{
+function formatarData(data){
 
-        if(o.id===id){
-            o.concluido=!o.concluido;
+    const partes = data.split("-");
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+/* CONCLUIR */
+
+function toggleEntrega(id){
+
+    entregas = entregas.map(entrega=>{
+
+        if(entrega.id === id){
+
+            entrega.concluida =
+            !entrega.concluida;
         }
 
-        return o;
+        return entrega;
     });
 
     salvar();
 }
 
-function remover(id){
+/* REMOVER */
 
-    objetivos =
-    objetivos.filter(o=>o.id!==id);
+function removerEntrega(id){
+
+    if(
+        !confirm(
+            "Deseja remover esta entrega?"
+        )
+    ) return;
+
+    entregas =
+    entregas.filter(
+        entrega=>entrega.id !== id
+    );
 
     salvar();
 }
 
-function atualizarProgresso(){
+window.toggleEntrega =
+toggleEntrega;
 
-    const total = objetivos.length;
+window.removerEntrega =
+removerEntrega;
 
-    const concluidos =
-    objetivos.filter(o=>o.concluido).length;
-
-    const pendentes =
-    total-concluidos;
-
-    document.getElementById("totalObjetivos")
-    .textContent=total;
-
-    document.getElementById("concluidos")
-    .textContent=concluidos;
-
-    document.getElementById("pendentes")
-    .textContent=pendentes;
-
-    const percentual =
-    total===0
-    ? 0
-    : Math.round(
-        concluidos/total*100
-    );
-
-    document.getElementById("percentual")
-    .textContent=`${percentual}%`;
-
-    document.getElementById("progresso")
-    .style.width=`${percentual}%`;
-}
+/* FILTRO */
 
 filtro.addEventListener(
     "change",
     renderizar
 );
 
-const historico =
-JSON.parse(
-localStorage.getItem("historicoCep")
-) || [];
+/* PROGRESSO */
 
-const listaHistorico =
-document.getElementById("historicoCep");
+function atualizarProgresso(){
 
-function atualizarHistorico(){
+    const total =
+    entregas.length;
 
-    listaHistorico.innerHTML="";
+    const concluidas =
+    entregas.filter(
+        e=>e.concluida
+    ).length;
 
-    historico.forEach(item=>{
+    const pendentes =
+    total - concluidas;
 
-        const li =
-        document.createElement("li");
+    document.getElementById(
+        "totalEntregas"
+    ).textContent = total;
 
-        li.className="item";
+    document.getElementById(
+        "concluidas"
+    ).textContent = concluidas;
 
-        li.textContent=item;
+    document.getElementById(
+        "pendentes"
+    ).textContent = pendentes;
 
-        listaHistorico.appendChild(li);
-    });
+    const percentual =
+
+    total === 0
+    ? 0
+    : Math.round(
+        (concluidas / total) * 100
+    );
+
+    document.getElementById(
+        "percentual"
+    ).textContent =
+    `${concluidas} de ${total} concluídas (${percentual}%)`;
+
+    document.getElementById(
+        "progresso"
+    ).style.width =
+    `${percentual}%`;
 }
 
-document.getElementById("buscarCep")
-.addEventListener("click",async()=>{
+/* CONSULTA CEP */
+
+document
+.getElementById("buscarCep")
+.addEventListener(
+"click",
+async ()=>{
 
     const cep =
-    document.getElementById("cep")
-    .value.replace(/\D/g,"");
+    document
+    .getElementById("cepBusca")
+    .value
+    .replace(/\D/g,'');
 
-    if(cep.length!==8){
+    if(cep.length !== 8){
 
-        alert("CEP inválido");
-
+        alert("CEP inválido.");
         return;
     }
 
@@ -234,27 +378,67 @@ document.getElementById("buscarCep")
 
         document
         .getElementById("resultadoCep")
-        .innerHTML=`
-            <p>${dados.logradouro}</p>
-            <p>${dados.bairro}</p>
-            <p>${dados.localidade}</p>
-            <p>${dados.uf}</p>
+        .innerHTML = `
+
+        <strong>Logradouro:</strong>
+        ${dados.logradouro}<br>
+
+        <strong>Bairro:</strong>
+        ${dados.bairro}<br>
+
+        <strong>Cidade:</strong>
+        ${dados.localidade}<br>
+
+        <strong>UF:</strong>
+        ${dados.uf}
         `;
 
-        historico.unshift(cep);
+        historicoCep.unshift(cep);
+
+        historicoCep =
+        [...new Set(historicoCep)];
+
+        historicoCep =
+        historicoCep.slice(0,10);
 
         localStorage.setItem(
             "historicoCep",
-            JSON.stringify(historico)
+            JSON.stringify(historicoCep)
         );
 
         atualizarHistorico();
 
     }catch{
 
-        alert("Erro ao consultar CEP.");
+        alert(
+        "Erro ao consultar CEP."
+        );
     }
 });
+
+/* HISTÓRICO */
+
+function atualizarHistorico(){
+
+    const lista =
+    document.getElementById(
+        "historicoCep"
+    );
+
+    lista.innerHTML = "";
+
+    historicoCep.forEach(cep=>{
+
+        const li =
+        document.createElement("li");
+
+        li.className = "entrega";
+
+        li.textContent = cep;
+
+        lista.appendChild(li);
+    });
+}
 
 renderizar();
 atualizarHistorico();
