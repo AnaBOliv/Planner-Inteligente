@@ -2,167 +2,260 @@
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planner Inteligente</title>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Organizador Inteligente de Entregas</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
+
+    <!-- Marca d'água -->
 
     <div class="assinatura">
         Desenvolvido por Ana B.
     </div>
 
+    <!-- Cabeçalho -->
+
     <header>
 
-        <h1>Planner Inteligente</h1>
+        <h1>
+            📦 Organizador Inteligente de Entregas
+        </h1>
 
-        <div class="acoes-topo">
-
-            <button id="temaBtn">
-                🌙 Tema
-            </button>
-
-        </div>
+        <button
+            id="temaBtn"
+            aria-label="Alternar tema"
+        >
+            🌙 Tema
+        </button>
 
     </header>
 
+    <!-- Conteúdo -->
+
     <main>
 
-        <section class="card">
+        <!-- Motivação -->
 
-            <h2>Progresso</h2>
+        <aside class="card card-motivacao">
 
-            <div class="estatisticas">
-
-                <p>Total: <span id="totalObjetivos">0</span></p>
-
-                <p>Concluídos: <span id="concluidos">0</span></p>
-
-                <p>Pendentes: <span id="pendentes">0</span></p>
-
-            </div>
-
-            <div class="barra">
-                <div id="progresso"></div>
-            </div>
-
-            <p id="percentual">0%</p>
-
-        </section>
-
-        <section class="card">
-
-            <h2>Novo Objetivo</h2>
-
-            <form id="formObjetivo">
-
-                <input
-                    type="text"
-                    id="titulo"
-                    placeholder="Digite um objetivo"
-                    required
-                >
-
-                <select id="prioridade">
-
-                    <option value="Baixa">Baixa</option>
-                    <option value="Média">Média</option>
-                    <option value="Alta">Alta</option>
-
-                </select>
-
-                <input
-                    type="date"
-                    id="data"
-                    required
-                >
-
-                <button type="submit">
-                    Adicionar Objetivo
-                </button>
-
-            </form>
-
-        </section>
-
-        <section class="card">
-
-            <h2>Filtrar</h2>
-
-            <select id="filtro">
-
-                <option value="todos">Todos</option>
-
-                <option value="pendentes">Pendentes</option>
-
-                <option value="concluidos">Concluídos</option>
-
-            </select>
-
-        </section>
-
-        <section class="card">
-
-            <h2>Objetivos</h2>
-
-            <ul id="listaObjetivos"></ul>
-
-        </section>
-
-        <section class="card">
-
-            <h2>Consultar CEP</h2>
-
-            <input
-                type="text"
-                id="cep"
-                maxlength="8"
-                placeholder="Digite o CEP"
-            >
-
-            <button id="buscarCep">
-                Buscar CEP
-            </button>
-
-            <div id="resultadoCep"></div>
-
-        </section>
-
-        <section class="card">
-
-            <h2>Histórico de Consultas</h2>
-
-            <ul id="historicoCep"></ul>
-
-        </section>
-
-        <section class="card">
-
-            <h2>Motivação</h2>
+            <h2>💡 Motivação</h2>
 
             <img
-                loading="lazy"
                 src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800"
                 alt="Produtividade"
                 class="imagemMotivacao"
+                loading="lazy"
             >
 
             <p id="fraseMotivacao">
-                Disciplina supera motivação.
+                Carregando frase...
             </p>
+
+            <button id="novaFrase">
+                Nova Frase
+            </button>
+
+        </aside>
+
+        <!-- Área principal -->
+
+        <section class="conteudo">
+
+            <!-- Estatísticas -->
+
+            <section class="card">
+
+                <h2>📊 Estatísticas</h2>
+
+                <div class="estatisticas">
+
+                    <p>
+                        Total:
+                        <strong id="totalEntregas">0</strong>
+                    </p>
+
+                    <p>
+                        Concluídas:
+                        <strong id="concluidas">0</strong>
+                    </p>
+
+                    <p>
+                        Pendentes:
+                        <strong id="pendentes">0</strong>
+                    </p>
+
+                </div>
+
+                <div class="barra">
+
+                    <div id="progresso"></div>
+
+                </div>
+
+                <p id="percentual">
+                    0%
+                </p>
+
+            </section>
+
+            <!-- Nova Entrega -->
+
+            <section class="card">
+
+                <h2>➕ Nova Entrega</h2>
+
+                <form id="formEntrega">
+
+                    <label for="titulo">
+                        Descrição da Entrega
+                    </label>
+
+                    <input
+                        type="text"
+                        id="titulo"
+                        placeholder="Ex.: Entregar notebook"
+                        required
+                    >
+
+                    <label for="prioridade">
+                        Prioridade
+                    </label>
+
+                    <select id="prioridade">
+
+                        <option value="Baixa">
+                            Baixa
+                        </option>
+
+                        <option value="Média">
+                            Média
+                        </option>
+
+                        <option value="Alta">
+                            Alta
+                        </option>
+
+                    </select>
+
+                    <label for="data">
+                        Data
+                    </label>
+
+                    <input
+                        type="date"
+                        id="data"
+                        required
+                    >
+
+                    <label for="cepEntrega">
+                        CEP de Entrega
+                    </label>
+
+                    <input
+                        type="text"
+                        id="cepEntrega"
+                        maxlength="8"
+                        placeholder="Digite o CEP"
+                        required
+                    >
+
+                    <button type="submit">
+                        Adicionar Entrega
+                    </button>
+
+                </form>
+
+            </section>
+
+            <!-- Filtro -->
+
+            <section class="card">
+
+                <h2>🔍 Filtro</h2>
+
+                <select id="filtro">
+
+                    <option value="todos">
+                        Todas
+                    </option>
+
+                    <option value="pendentes">
+                        Pendentes
+                    </option>
+
+                    <option value="concluidas">
+                        Concluídas
+                    </option>
+
+                </select>
+
+            </section>
+
+            <!-- Consulta CEP -->
+
+            <section class="card">
+
+                <h2>📍 Consultar CEP</h2>
+
+                <input
+                    type="text"
+                    id="cepBusca"
+                    maxlength="8"
+                    placeholder="Digite um CEP"
+                >
+
+                <button id="buscarCep">
+                    Buscar CEP
+                </button>
+
+                <div id="resultadoCep"></div>
+
+            </section>
+
+            <!-- Histórico -->
+
+            <section class="card">
+
+                <h2>🕒 Histórico de CEPs</h2>
+
+                <ul id="historicoCep"></ul>
+
+            </section>
+
+            <!-- Lista -->
+
+            <section class="card">
+
+                <h2>📦 Entregas</h2>
+
+                <ul id="listaEntregas"></ul>
+
+            </section>
 
         </section>
 
     </main>
 
+    <!-- Rodapé -->
+
     <footer>
 
         Criado para fins de prática •
 
-        anaboliveira2319@gmail.com
+        <a href="mailto:anaboliveira2319@gmail.com">
+            anaboliveira2319@gmail.com
+        </a>
 
     </footer>
 
