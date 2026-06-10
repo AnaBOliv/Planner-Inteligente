@@ -1,96 +1,170 @@
 :root{
 
     --bg:#D2C3F6;
-
     --card:#F5F0FF;
-
-    --texto:#36255C;
-
-    --botao:#36255C;
-
-    --botaoTexto:white;
+    --text:#36255C;
+    --primary:#36255C;
+    --primary-light:#5A438F;
+    --success:#27AE60;
+    --danger:#E74C3C;
+    --shadow:rgba(0,0,0,.10);
 }
 
 .dark{
 
     --bg:#36255C;
-
     --card:#4A3678;
-
-    --texto:#FFFFFF;
-
-    --botao:#D2C3F6;
-
-    --botaoTexto:#36255C;
+    --text:#FFFFFF;
+    --primary:#D2C3F6;
+    --primary-light:#E4D8FF;
+    --shadow:rgba(0,0,0,.25);
 }
 
 *{
-
     margin:0;
     padding:0;
-
     box-sizing:border-box;
-
-    font-family:Segoe UI,sans-serif;
+    font-family:"Segoe UI",sans-serif;
 }
 
 body{
 
     background:var(--bg);
-
-    color:var(--texto);
+    color:var(--text);
 
     min-height:100vh;
 
     display:flex;
-
     flex-direction:column;
 
     transition:.3s;
 }
 
+/* CABEÇALHO */
+
 header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 
     padding:20px;
 
-    text-align:center;
+    background:var(--card);
+
+    box-shadow:0 2px 8px var(--shadow);
 }
 
-.acoes-topo{
+header h1{
 
-    margin-top:15px;
+    font-size:1.6rem;
 }
+
+/* BOTÕES */
+
+button{
+
+    background:var(--primary);
+
+    color:white;
+
+    border:none;
+
+    padding:10px 15px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+button:hover{
+
+    opacity:.9;
+}
+
+.dark button{
+
+    color:#36255C;
+}
+
+/* LAYOUT */
 
 main{
 
-    width:min(1200px,95%);
+    width:min(1400px,95%);
 
-    margin:auto;
+    margin:20px auto;
+
+    display:grid;
+
+    grid-template-columns:320px 1fr;
+
+    gap:20px;
+
+    flex:1;
+}
+
+.conteudo{
 
     display:grid;
 
     grid-template-columns:
-    repeat(auto-fit,minmax(320px,1fr));
+    repeat(auto-fit,minmax(300px,1fr));
 
     gap:20px;
-
-    padding:20px;
 }
+
+/* CARDS */
 
 .card{
 
     background:var(--card);
 
-    padding:20px;
-
     border-radius:12px;
 
-    box-shadow:0 0 10px rgba(0,0,0,.1);
+    padding:20px;
+
+    box-shadow:0 0 12px var(--shadow);
 }
 
-h2{
+.card h2{
 
     margin-bottom:15px;
+}
+
+.card-motivacao{
+
+    position:sticky;
+
+    top:20px;
+
+    height:fit-content;
+}
+
+/* IMAGEM */
+
+.imagemMotivacao{
+
+    width:100%;
+
+    border-radius:10px;
+
+    margin-bottom:15px;
+
+    object-fit:cover;
+}
+
+/* FORMULÁRIOS */
+
+label{
+
+    display:block;
+
+    margin-bottom:5px;
+
+    font-weight:600;
 }
 
 input,
@@ -100,107 +174,187 @@ select{
 
     padding:10px;
 
-    margin-bottom:10px;
+    margin-bottom:12px;
 
-    border:none;
-
-    border-radius:8px;
-}
-
-button{
-
-    background:var(--botao);
-
-    color:var(--botaoTexto);
-
-    border:none;
-
-    padding:10px;
+    border:1px solid #ccc;
 
     border-radius:8px;
 
-    cursor:pointer;
+    font-size:15px;
 }
 
-button:hover{
+.dark input,
+.dark select{
 
-    opacity:.9;
+    background:#624B97;
+
+    color:white;
+
+    border:none;
 }
+
+/* ESTATÍSTICAS */
+
+.estatisticas{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    margin-bottom:15px;
+}
+
+/* PROGRESSO */
+
+.barra{
+
+    width:100%;
+
+    height:22px;
+
+    background:#d7d7d7;
+
+    border-radius:20px;
+
+    overflow:hidden;
+}
+
+#progresso{
+
+    width:0;
+
+    height:100%;
+
+    background:var(--success);
+
+    transition:.4s;
+}
+
+#percentual{
+
+    margin-top:10px;
+
+    text-align:center;
+
+    font-weight:bold;
+}
+
+/* LISTAS */
 
 ul{
 
     list-style:none;
 }
 
-.item{
-
-    padding:12px;
-
-    margin-bottom:10px;
-
-    border-radius:8px;
+.entrega{
 
     background:white;
 
     color:#222;
+
+    padding:15px;
+
+    border-radius:10px;
+
+    margin-bottom:12px;
+
+    box-shadow:0 0 5px rgba(0,0,0,.08);
 }
 
-.concluido{
+.dark .entrega{
+
+    background:#E8DFFF;
+
+    color:#222;
+}
+
+.entrega h3{
+
+    margin-bottom:8px;
+}
+
+.concluida{
+
+    opacity:.65;
 
     text-decoration:line-through;
-
-    opacity:.6;
 }
 
-.barra{
+/* PRIORIDADES */
 
-    width:100%;
+.prioridade-alta{
 
-    height:20px;
+    color:#E74C3C;
+    font-weight:bold;
+}
 
-    background:#ccc;
+.prioridade-media{
 
-    border-radius:20px;
+    color:#F39C12;
+    font-weight:bold;
+}
 
-    overflow:hidden;
+.prioridade-baixa{
+
+    color:#27AE60;
+    font-weight:bold;
+}
+
+/* BOTÕES DA ENTREGA */
+
+.acoes{
+
+    display:flex;
+
+    gap:10px;
 
     margin-top:10px;
 }
 
-#progresso{
+.btn-remover{
 
-    height:100%;
-
-    width:0%;
-
-    background:#27AE60;
-
-    transition:.3s;
+    background:var(--danger);
 }
 
-.imagemMotivacao{
+.btn-concluir{
 
-    width:100%;
-
-    border-radius:10px;
-
-    margin-bottom:10px;
+    background:var(--success);
 }
+
+/* RESULTADO CEP */
+
+#resultadoCep{
+
+    margin-top:15px;
+
+    line-height:1.8;
+}
+
+/* ASSINATURA */
 
 .assinatura{
 
     position:fixed;
 
     left:15px;
-
     bottom:15px;
+
+    font-size:14px;
+
+    font-weight:700;
 
     opacity:.12;
 
-    font-weight:bold;
-
     pointer-events:none;
+
+    user-select:none;
+
+    z-index:1;
 }
+
+/* RODAPÉ */
 
 footer{
 
@@ -213,10 +367,51 @@ footer{
     opacity:.6;
 }
 
-@media(max-width:768px){
+footer a{
+
+    color:inherit;
+}
+
+/* TABLET */
+
+@media(max-width:992px){
 
     main{
 
         grid-template-columns:1fr;
+    }
+
+    .card-motivacao{
+
+        position:static;
+    }
+}
+
+/* CELULAR */
+
+@media(max-width:768px){
+
+    header{
+
+        flex-direction:column;
+
+        gap:15px;
+
+        text-align:center;
+    }
+
+    .conteudo{
+
+        grid-template-columns:1fr;
+    }
+
+    .acoes{
+
+        flex-direction:column;
+    }
+
+    .acoes button{
+
+        width:100%;
     }
 }
