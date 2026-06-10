@@ -1,112 +1,260 @@
-const form = document.getElementById("form");
-const lista = document.getElementById("lista");
-const temaBtn = document.getElementById("tema");
-const contador = document.getElementById("contador");
+const form = document.getElementById("formObjetivo");
+const lista = document.getElementById("listaObjetivos");
+const filtro = document.getElementById("filtro");
 
-let objetivos = [];
+let objetivos =
+JSON.parse(localStorage.getItem("objetivos")) || [];
 
-// 🌙 Tema (FUNCIONANDO)
-temaBtn.addEventListener("click", () => {
-  document.body.classList.toggle("light");
+const frases = [
+    "Disciplina supera motivação.",
+    "Pequenos passos geram grandes resultados.",
+    "Consistência é mais importante que intensidade.",
+    "O futuro depende do que você faz hoje."
+];
+
+document.getElementById("fraseMotivacao")
+.textContent =
+frases[Math.floor(Math.random()*frases.length)];
+
+const temaSalvo =
+localStorage.getItem("tema");
+
+if(temaSalvo === "dark"){
+    document.body.classList.add("dark");
+}
+
+document.getElementById("temaBtn")
+.addEventListener("click",()=>{
+
+    document.body.classList.toggle("dark");
+
+    localStorage.setItem(
+        "tema",
+        document.body.classList.contains("dark")
+        ? "dark"
+        : "light"
+    );
 });
 
-// ➕ Adicionar objetivo
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
+form.addEventListener("submit",(e)=>{
 
-  const titulo = document.getElementById("titulo").value.trim();
-  const prioridade = document.getElementById("prioridade").value;
-  const data = document.getElementById("data").value;
+    e.preventDefault();
 
-  if (!titulo) return;
+    const titulo =
+    document.getElementById("titulo").value.trim();
 
-  objetivos.push({
-    id: Date.now(),
-    titulo,
-    prioridade,
-    data,
-    concluido: false
-  });
+    const prioridade =
+    document.getElementById("prioridade").value;
 
-  renderizar();
-  form.reset();
+    const data =
+    document.getElementById("data").value;
+
+    objetivos.push({
+
+        id:Date.now(),
+
+        titulo,
+
+        prioridade,
+
+        data,
+
+        concluido:false
+    });
+
+    salvar();
+
+    form.reset();
 });
 
-// 🎨 Renderizar lista + contador
-function renderizar() {
-  lista.innerHTML = "";
+function salvar(){
 
-  let concluidos = 0;
+    localStorage.setItem(
+        "objetivos",
+        JSON.stringify(objetivos)
+    );
 
-  objetivos.forEach(obj => {
-    const li = document.createElement("li");
+    renderizar();
+}
 
-    const texto = document.createElement("span");
-    texto.textContent = `${obj.titulo} - ${obj.data}`;
+function renderizar(){
 
-    if (obj.concluido) {
-      texto.classList.add("concluido");
-      concluidos++;
+    lista.innerHTML="";
+
+    const tipo = filtro.value;
+
+    let exibir = [...objetivos];
+
+    if(tipo==="pendentes"){
+        exibir = objetivos.filter(o=>!o.concluido);
     }
 
-    const btn = document.createElement("button");
-    btn.textContent = "✔";
-    btn.onclick = () => toggle(obj.id);
-
-    li.appendChild(texto);
-    li.appendChild(btn);
-    lista.appendChild(li);
-  });
-
-  contador.textContent = concluidos;
-}
-
-// ✔ Concluir objetivo
-function toggle(id) {
-  objetivos = objetivos.map(obj => {
-    if (obj.id === id) {
-      obj.concluido = !obj.concluido;
+    if(tipo==="concluidos"){
+        exibir = objetivos.filter(o=>o.concluido);
     }
-    return obj;
-  });
 
-  renderizar();
+    exibir.forEach(obj=>{
+
+        const li =
+        document.createElement("li");
+
+        li.className="item";
+
+        li.innerHTML=`
+            <strong>${obj.titulo}</strong><br>
+            ${obj.prioridade} • ${obj.data}
+            <br><br>
+            <button onclick="toggle(${obj.id})">
+                ✔
+            </button>
+
+            <button onclick="remover(${obj.id})">
+                🗑
+            </button>
+        `;
+
+        if(obj.concluido){
+            li.classList.add("concluido");
+        }
+
+        lista.appendChild(li);
+    });
+
+    atualizarProgresso();
 }
 
-// ==========================
-// 🔥 API LOCAL (frases.json)
-// ==========================
-async function carregarFrase() {
-  const el = document.getElementById("frase");
+function toggle(id){
 
-  try {
-    el.innerText = "Carregando...";
+    objetivos = objetivos.map(o=>{
 
-    const response = await fetch("frases.json");
+        if(o.id===id){
+            o.concluido=!o.concluido;
+        }
 
-    if (!response.ok) throw new Error("Erro ao carregar JSON");
+        return o;
+    });
 
-    const data = await response.json();
-
-    const randomIndex = Math.floor(Math.random() * data.length);
-    const item = data[randomIndex];
-
-    el.innerText = `"${item.frase}"`;
-
-  } catch (error) {
-    console.error("Erro:", error);
-
-    // fallback (IMPORTANTE)
-    const frasesFallback = [
-      "Disciplina supera motivação",
-      "Feito é melhor que perfeito",
-      "Consistência cria resultados"
-    ];
-
-    const random = Math.floor(Math.random() * frasesFallback.length);
-    el.innerText = frasesFallback[random];
-  }
+    salvar();
 }
 
-// 🚀 iniciar
-carregarFrase();
+function remover(id){
+
+    objetivos =
+    objetivos.filter(o=>o.id!==id);
+
+    salvar();
+}
+
+function atualizarProgresso(){
+
+    const total = objetivos.length;
+
+    const concluidos =
+    objetivos.filter(o=>o.concluido).length;
+
+    const pendentes =
+    total-concluidos;
+
+    document.getElementById("totalObjetivos")
+    .textContent=total;
+
+    document.getElementById("concluidos")
+    .textContent=concluidos;
+
+    document.getElementById("pendentes")
+    .textContent=pendentes;
+
+    const percentual =
+    total===0
+    ? 0
+    : Math.round(
+        concluidos/total*100
+    );
+
+    document.getElementById("percentual")
+    .textContent=`${percentual}%`;
+
+    document.getElementById("progresso")
+    .style.width=`${percentual}%`;
+}
+
+filtro.addEventListener(
+    "change",
+    renderizar
+);
+
+const historico =
+JSON.parse(
+localStorage.getItem("historicoCep")
+) || [];
+
+const listaHistorico =
+document.getElementById("historicoCep");
+
+function atualizarHistorico(){
+
+    listaHistorico.innerHTML="";
+
+    historico.forEach(item=>{
+
+        const li =
+        document.createElement("li");
+
+        li.className="item";
+
+        li.textContent=item;
+
+        listaHistorico.appendChild(li);
+    });
+}
+
+document.getElementById("buscarCep")
+.addEventListener("click",async()=>{
+
+    const cep =
+    document.getElementById("cep")
+    .value.replace(/\D/g,"");
+
+    if(cep.length!==8){
+
+        alert("CEP inválido");
+
+        return;
+    }
+
+    try{
+
+        const resposta =
+        await fetch(
+        `https://viacep.com.br/ws/${cep}/json/`
+        );
+
+        const dados =
+        await resposta.json();
+
+        document
+        .getElementById("resultadoCep")
+        .innerHTML=`
+            <p>${dados.logradouro}</p>
+            <p>${dados.bairro}</p>
+            <p>${dados.localidade}</p>
+            <p>${dados.uf}</p>
+        `;
+
+        historico.unshift(cep);
+
+        localStorage.setItem(
+            "historicoCep",
+            JSON.stringify(historico)
+        );
+
+        atualizarHistorico();
+
+    }catch{
+
+        alert("Erro ao consultar CEP.");
+    }
+});
+
+renderizar();
+atualizarHistorico();
