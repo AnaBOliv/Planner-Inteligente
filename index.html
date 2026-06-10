@@ -1,175 +1,173 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8">
-  <title>Planner Inteligente</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planner Inteligente</title>
 
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --text: #ffffff;
-      --button: #22c55e;
-    }
-
-    .light {
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #000000;
-      --button: #16a34a;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    header {
-      padding: 20px;
-      background: var(--card);
-    }
-
-    header .topo {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header p {
-      margin-top: 10px;
-      opacity: 0.8;
-      font-size: 14px;
-    }
-
-    main {
-      display: flex;
-      gap: 20px;
-      padding: 20px;
-      flex-wrap: wrap;
-    }
-
-    .card {
-      flex: 1;
-      min-width: 280px;
-      background: var(--card);
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    input, select, button {
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-    }
-
-    button {
-      background: var(--button);
-      color: white;
-      cursor: pointer;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    li {
-      background: #334155;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .concluido {
-      text-decoration: line-through;
-      opacity: 0.6;
-    }
-
-    .contador {
-      font-size: 20px;
-      text-align: center;
-    }
-  </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>
-  <div class="topo">
-    <h1>Planner Inteligente</h1>
-    <button id="tema">🌙</button>
-  </div>
+    <div class="assinatura">
+        Desenvolvido por Ana B.
+    </div>
 
-  <p>
-    Organize seus objetivos semanais, acompanhe seu progresso e mantenha o foco com ajuda de tecnologia.
-  </p>
-</header>
+    <header>
 
-<main>
+        <h1>Planner Inteligente</h1>
 
-  <!-- CONTADOR -->
-  <section class="card">
-    <h2>Objetivos Concluídos</h2>
-    <p id="contador" class="contador">0</p>
-  </section>
+        <div class="acoes-topo">
 
-  <!-- FRASE -->
-  <section class="card">
-    <h2>Motivação</h2>
-    <p id="frase">Carregando...</p>
-    <button onclick="carregarFrase()">Nova frase</button>
-  </section>
+            <button id="temaBtn">
+                🌙 Tema
+            </button>
 
-  <!-- FORM -->
-  <section class="card">
-    <h2>Novo Objetivo</h2>
+        </div>
 
-    <form id="form">
-      <input type="text" id="titulo" placeholder="Seu objetivo" required>
+    </header>
 
-      <label>Prioridade</label>
-      <select id="prioridade">
-        <option value="baixa">Baixa</option>
-        <option value="media">Média</option>
-        <option value="alta">Alta</option>
-      </select>
+    <main>
 
-      <label>Data</label>
-      <input type="date" id="data" required>
+        <section class="card">
 
-      <button type="submit">Adicionar</button>
-    </form>
-  </section>
+            <h2>Progresso</h2>
 
-  <!-- LISTA -->
-  <section class="card">
-    <h2>Objetivos em andamento</h2>
-    <ul id="lista"></ul>
-  </section>
+            <div class="estatisticas">
 
-</main>
+                <p>Total: <span id="totalObjetivos">0</span></p>
 
-<script src="script.js"></script>
+                <p>Concluídos: <span id="concluidos">0</span></p>
 
-  <footer>
-    <p>
-      Fale conosco: 
-      <a href="mailto:seuemail@email.com">
-        ana.silva45@celsoonline.com.br
-      </a>
-    </p>
-    <p>Criado por Ana B.</p>
-  </footer>
+                <p>Pendentes: <span id="pendentes">0</span></p>
+
+            </div>
+
+            <div class="barra">
+                <div id="progresso"></div>
+            </div>
+
+            <p id="percentual">0%</p>
+
+        </section>
+
+        <section class="card">
+
+            <h2>Novo Objetivo</h2>
+
+            <form id="formObjetivo">
+
+                <input
+                    type="text"
+                    id="titulo"
+                    placeholder="Digite um objetivo"
+                    required
+                >
+
+                <select id="prioridade">
+
+                    <option value="Baixa">Baixa</option>
+                    <option value="Média">Média</option>
+                    <option value="Alta">Alta</option>
+
+                </select>
+
+                <input
+                    type="date"
+                    id="data"
+                    required
+                >
+
+                <button type="submit">
+                    Adicionar Objetivo
+                </button>
+
+            </form>
+
+        </section>
+
+        <section class="card">
+
+            <h2>Filtrar</h2>
+
+            <select id="filtro">
+
+                <option value="todos">Todos</option>
+
+                <option value="pendentes">Pendentes</option>
+
+                <option value="concluidos">Concluídos</option>
+
+            </select>
+
+        </section>
+
+        <section class="card">
+
+            <h2>Objetivos</h2>
+
+            <ul id="listaObjetivos"></ul>
+
+        </section>
+
+        <section class="card">
+
+            <h2>Consultar CEP</h2>
+
+            <input
+                type="text"
+                id="cep"
+                maxlength="8"
+                placeholder="Digite o CEP"
+            >
+
+            <button id="buscarCep">
+                Buscar CEP
+            </button>
+
+            <div id="resultadoCep"></div>
+
+        </section>
+
+        <section class="card">
+
+            <h2>Histórico de Consultas</h2>
+
+            <ul id="historicoCep"></ul>
+
+        </section>
+
+        <section class="card">
+
+            <h2>Motivação</h2>
+
+            <img
+                loading="lazy"
+                src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800"
+                alt="Produtividade"
+                class="imagemMotivacao"
+            >
+
+            <p id="fraseMotivacao">
+                Disciplina supera motivação.
+            </p>
+
+        </section>
+
+    </main>
+
+    <footer>
+
+        Criado para fins de prática •
+
+        anaboliveira2319@gmail.com
+
+    </footer>
+
+    <script src="script.js"></script>
+
 </body>
+
 </html>
